@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🏥 وحدة التحكم عن بُعد البيطرية الشاملة</title>
+    <title>🏥 وحدة التحكم الطبي البيطري</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0b1329;
-            --card-bg: rgba(23, 37, 84, 0.6);
-            --border-color: rgba(56, 189, 248, 0.2);
+            --bg-light: #f1f5f9;
+            --panel-bg: #ffffff;
+            --border-color: #cbd5e1;
             --primary-blue: #0284c7;
+            --primary-hover: #0369a1;
             --medical-cyan: #06b6d4;
             --medical-green: #10b981;
             --medical-red: #ef4444;
-            --purple-accent: #8b5cf6;
-            --text-light: #f1f5f9;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
         }
 
         * {
@@ -29,11 +30,8 @@
         body {
             margin: 0;
             padding: 0;
-            background: var(--bg-dark);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(14, 116, 144, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
-            color: var(--text-light);
+            background: var(--bg-light);
+            color: var(--text-dark);
             display: flex;
             flex-direction: column;
             height: 100vh;
@@ -42,14 +40,15 @@
 
         /* Top Header Navigation */
         .header {
-            padding: 10px 14px;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
+            padding: 8px 12px;
+            background: var(--panel-bg);
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             z-index: 100;
+            gap: 8px;
         }
 
         .brand-status {
@@ -62,10 +61,10 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255, 255, 255, 0.05);
+            background: #f8fafc;
             padding: 4px 10px;
             border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
             font-size: 12px;
             font-weight: 700;
         }
@@ -75,63 +74,71 @@
             height: 10px;
             border-radius: 50%;
             background: var(--medical-red);
-            box-shadow: 0 0 8px var(--medical-red);
+            box-shadow: 0 0 6px var(--medical-red);
             transition: all 0.3s ease;
         }
 
         .status-dot.online {
             background: var(--medical-green);
-            box-shadow: 0 0 10px var(--medical-green);
+            box-shadow: 0 0 8px var(--medical-green);
         }
 
+        /* Device Switcher & Connection Box */
         .connection-box {
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        .ip-input {
-            background: rgba(15, 23, 42, 0.9);
+        .device-select {
+            background: #f8fafc;
             border: 1px solid var(--border-color);
-            color: var(--medical-cyan);
-            padding: 6px 10px;
+            color: var(--primary-blue);
+            padding: 6px 8px;
             border-radius: 8px;
-            width: 130px;
-            text-align: center;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
             outline: none;
-            transition: border-color 0.2s;
+            cursor: pointer;
         }
 
-        .ip-input:focus {
-            border-color: var(--medical-cyan);
+        .ip-input {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            color: var(--text-dark);
+            padding: 6px 8px;
+            border-radius: 8px;
+            width: 110px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            outline: none;
         }
 
         .btn-connect {
-            background: linear-gradient(135deg, var(--primary-blue), var(--medical-cyan));
+            background: var(--primary-blue);
             color: white;
             border: none;
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
-            transition: transform 0.1s, opacity 0.2s;
+            transition: background 0.2s, transform 0.1s;
         }
 
         .btn-connect:active {
             transform: scale(0.95);
+            background: var(--primary-hover);
         }
 
-        /* Quick Action Bar / Groups Navigation */
+        /* Quick Action Bar */
         .actions-bar {
             display: flex;
-            gap: 8px;
-            padding: 8px 12px;
+            gap: 6px;
+            padding: 6px 10px;
             overflow-x: auto;
-            background: rgba(15, 23, 42, 0.6);
+            background: #f8fafc;
             border-bottom: 1px solid var(--border-color);
             scrollbar-width: none;
         }
@@ -141,65 +148,88 @@
         }
 
         .app-btn {
-            background: var(--card-bg);
+            background: var(--panel-bg);
             border: 1px solid var(--border-color);
-            color: var(--text-light);
-            padding: 7px 13px;
-            border-radius: 10px;
+            color: var(--text-dark);
+            padding: 6px 11px;
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 700;
             white-space: nowrap;
             cursor: pointer;
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
             transition: all 0.2s ease;
         }
 
         .app-btn:active {
-            transform: scale(0.94);
+            transform: scale(0.95);
             background: var(--primary-blue);
-            border-color: var(--medical-cyan);
+            color: white;
         }
 
-        /* Main Display Screen Viewport */
+        /* Live Viewport */
         .viewport {
             flex: 1;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #020617;
+            background: #e2e8f0;
             overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            touch-action: none; /* تحسين استجابة اللمس للماوس */
         }
 
         #screenView {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
             pointer-events: none;
+            /* تحسين جودة وتنعيم الصورة الحية */
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
 
         .touch-hint {
             position: absolute;
-            top: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 4px 12px;
-            border-radius: 12px;
+            top: 8px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 4px 10px;
+            border-radius: 20px;
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--text-dark);
             pointer-events: none;
             backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        /* Keyboard Drawer */
+        .keyboard-drawer {
+            display: none;
+            background: var(--panel-bg);
+            padding: 6px 10px;
+            border-top: 1px solid var(--border-color);
+            gap: 6px;
+        }
+
+        .keyboard-drawer.active {
+            display: flex;
+        }
+
+        .kbd-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            font-size: 14px;
         }
 
         /* Bottom Controls Pad */
         .controls-container {
-            background: rgba(15, 23, 42, 0.95);
+            background: var(--panel-bg);
             border-top: 1px solid var(--border-color);
-            padding: 8px 12px;
+            padding: 8px 10px;
             display: flex;
             flex-direction: column;
             gap: 6px;
@@ -207,39 +237,36 @@
 
         .controls-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            gap: 8px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
         }
 
         .ctrl-btn {
-            background: rgba(30, 41, 59, 0.8);
-            color: var(--text-light);
+            background: #f8fafc;
+            color: var(--text-dark);
             border: 1px solid var(--border-color);
-            padding: 10px 4px;
-            border-radius: 10px;
-            font-size: 12px;
+            padding: 8px 2px;
+            border-radius: 8px;
+            font-size: 11px;
             font-weight: 700;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 3px;
+            gap: 2px;
             cursor: pointer;
             transition: background 0.15s, transform 0.1s;
         }
 
         .ctrl-btn:active {
             background: var(--primary-blue);
+            color: white;
             transform: scale(0.95);
         }
 
-        .ctrl-btn.accent-btn {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(124, 58, 237, 0.5));
-            border-color: rgba(167, 139, 250, 0.4);
-        }
-
-        .ctrl-btn.accent-btn:active {
-            background: var(--purple-accent);
+        .ctrl-btn.active-btn {
+            background: var(--primary-blue);
+            color: white;
         }
     </style>
 </head>
@@ -253,29 +280,42 @@
                 <span id="statusText">مفصول</span>
             </div>
         </div>
+        
+        <!-- Multi-Device Switcher -->
         <div class="connection-box">
-            <input type="text" id="ipAddress" class="ip-input" value="192.168.1.100" placeholder="عنوان IP">
+            <select id="deviceSelect" class="device-select" onchange="switchDevice()">
+                <option value="192.168.1.100">جهاز العيادة 1</option>
+                <option value="192.168.1.101">جهاز العيادة 2</option>
+                <option value="192.168.1.102">الجهاز الرئيسي</option>
+                <option value="custom">عنوان آخر...</option>
+            </select>
+            <input type="text" id="ipAddress" class="ip-input" value="192.168.1.100" placeholder="IP الجهاز">
             <button class="btn-connect" onclick="connect()">اتصال</button>
         </div>
     </div>
 
-    <!-- Quick Navigation / Application Groups Bar -->
+    <!-- Quick Navigation Bar -->
     <div class="actions-bar">
         <button class="app-btn" onclick="openForm('POS')">🛒 الفواتير</button>
         <button class="app-btn" onclick="openForm('GROUP_SALES')">📊 المبيعات</button>
         <button class="app-btn" onclick="openForm('GROUP_ITEMS')">💊 الأصناف</button>
-        <button class="app-btn" onclick="openForm('GROUP_STOCK')">📦 المخزن والمستودعات</button>
+        <button class="app-btn" onclick="openForm('GROUP_STOCK')">📦 المخزن</button>
         <button class="app-btn" onclick="openForm('GROUP_ORDERS')">📋 الطلبيات</button>
-        <button class="app-btn" onclick="openForm('GROUP_USERS')">🐾 العملاء والحيوانات</button>
-        <button class="app-btn" onclick="openForm('GROUP_OFFERS')">🎁 العروض والخصومات</button>
+        <button class="app-btn" onclick="openForm('GROUP_USERS')">🐾 العملاء</button>
+        <button class="app-btn" onclick="openForm('GROUP_OFFERS')">🎁 العروض</button>
         <button class="app-btn" onclick="openForm('GROUP_SETTINGS')">⚙️ الإعدادات</button>
-        <button class="app-btn" onclick="sendCmd('SHOW_QR')">📱 QR المتجر</button>
     </div>
 
-    <!-- Live Screen Viewport & Touch Surface -->
+    <!-- Live Screen Viewport -->
     <div class="viewport" id="touchArea">
-        <span class="touch-hint">👆 المس ومرر للتحكم بالماوس | ضغطة للكليك الشمال | ضغطة مطولة للكليك اليمين</span>
+        <span class="touch-hint">👆 تحريك الماوس | ضغطة للكليك | ضغطة مطولة لكليك يمين</span>
         <img id="screenView" src="" alt="بانتظار البث الحي...">
+    </div>
+
+    <!-- Keyboard Input Box (Hidden by default) -->
+    <div class="keyboard-drawer" id="keyboardDrawer">
+        <input type="text" id="kbdText" class="kbd-input" placeholder="اكتب هنا للإرسال للكمبيوتر..." oninput="sendText(this.value)">
+        <button class="btn-connect" onclick="sendCmd('KEY|ENTER')">إدخال ↵</button>
     </div>
 
     <!-- Bottom Mouse & Controls Panel -->
@@ -283,19 +323,27 @@
         <div class="controls-grid">
             <button class="ctrl-btn" onclick="sendCmd('CLICK_LEFT')">
                 <span>🖱️</span>
-                <span>كليك شمال</span>
+                <span>شمال</span>
             </button>
             <button class="ctrl-btn" onclick="sendCmd('CLICK_RIGHT')">
                 <span>🖱️</span>
-                <span>كليك يمين</span>
+                <span>يمين</span>
             </button>
-            <button class="ctrl-btn" onclick="sendCmd('SCROLL|120')">
+            <button class="ctrl-btn" onclick="sendCmd('SCROLL|150')">
                 <span>🔼</span>
                 <span>أعلى</span>
             </button>
-            <button class="ctrl-btn" onclick="sendCmd('SCROLL|-120')">
+            <button class="ctrl-btn" onclick="sendCmd('SCROLL|-150')">
                 <span>🔽</span>
                 <span>أسفل</span>
+            </button>
+            <button class="ctrl-btn" onclick="toggleKeyboard()">
+                <span>⌨️</span>
+                <span>الكيبورد</span>
+            </button>
+            <button class="ctrl-btn" onclick="toggleFullscreen()">
+                <span>🗖</span>
+                <span>تكبير</span>
             </button>
         </div>
     </div>
@@ -307,9 +355,23 @@
         let touchStartTime = 0;
         let isMoving = false;
 
+        // التبديل بين الأجهزة
+        function switchDevice() {
+            const select = document.getElementById('deviceSelect');
+            const ipInput = document.getElementById('ipAddress');
+            if (select.value !== 'custom') {
+                ipInput.value = select.value;
+                connect(); // الاتصال التلقائي عند التغيير
+            } else {
+                ipInput.focus();
+            }
+        }
+
         function connect() {
             const ip = document.getElementById('ipAddress').value.trim();
             if (!ip) return alert("يرجى إدخال IP الكمبيوتر أولاً");
+
+            if (ws) ws.close(); // إغلاق أي اتصال سابق
 
             const statusDot = document.getElementById('statusDot');
             const statusText = document.getElementById('statusText');
@@ -331,7 +393,7 @@
 
                 ws.onerror = () => {
                     statusDot.classList.remove('online');
-                    statusText.innerText = "خطأ بالمطب";
+                    statusText.innerText = "خطأ في الاتصال";
                 };
 
                 ws.onmessage = (event) => {
@@ -356,8 +418,35 @@
             sendCmd("OPEN_FORM|" + formKey);
         }
 
-        // Advanced Touchpad Controller Logic
+        // الكيبورد
+        function toggleKeyboard() {
+            const drawer = document.getElementById('keyboardDrawer');
+            drawer.classList.toggle('active');
+            if (drawer.classList.contains('active')) {
+                document.getElementById('kbdText').focus();
+            }
+        }
+
+        function sendText(text) {
+            if (text.length > 0) {
+                sendCmd("KEYBOARD|" + text);
+                document.getElementById('kbdText').value = ""; // تفريغ بعد الإرسال
+            }
+        }
+
+        // ملء الشاشة للبث الحي
+        function toggleFullscreen() {
+            const elem = document.getElementById('touchArea');
+            if (!document.fullscreenElement) {
+                elem.requestFullscreen().catch(err => alert(err.message));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // تحسين حساسية وحركة الماوس باللمس
         const touchArea = document.getElementById('touchArea');
+        const SENSITIVITY = 2.2; // رفع الحساسية للتحكم السريع والدقيق
 
         touchArea.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1) {
@@ -366,7 +455,6 @@
                 touchStartTime = Date.now();
                 isMoving = false;
             } else if (e.touches.length === 2) {
-                // Two-finger tap detection for Right Click
                 lastTouchY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
             }
         }, { passive: true });
@@ -376,21 +464,20 @@
                 let currentX = e.touches[0].clientX;
                 let currentY = e.touches[0].clientY;
 
-                let deltaX = Math.round((currentX - lastTouchX) * 1.7);
-                let deltaY = Math.round((currentY - lastTouchY) * 1.7);
+                let deltaX = Math.round((currentX - lastTouchX) * SENSITIVITY);
+                let deltaY = Math.round((currentY - lastTouchY) * SENSITIVITY);
 
-                if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) {
+                if (Math.abs(deltaX) > 0 || Math.abs(deltaY) > 0) {
                     isMoving = true;
                     sendCmd(`MOVE|${deltaX}|${deltaY}`);
                     lastTouchX = currentX;
                     lastTouchY = currentY;
                 }
             } else if (e.touches.length === 2) {
-                // Two-finger Scroll
                 let currentY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-                let deltaY = Math.round((currentY - lastTouchY) * 3);
+                let deltaY = Math.round((currentY - lastTouchY) * 2.5);
                 
-                if (Math.abs(deltaY) > 5) {
+                if (Math.abs(deltaY) > 2) {
                     sendCmd(`SCROLL|${deltaY}`);
                     lastTouchY = currentY;
                 }
@@ -400,12 +487,9 @@
         touchArea.addEventListener('touchend', (e) => {
             const duration = Date.now() - touchStartTime;
 
-            // Single tap detection (Left Click) if not moved
-            if (!isMoving && duration < 250 && e.changedTouches.length === 1) {
+            if (!isMoving && duration < 200 && e.changedTouches.length === 1) {
                 sendCmd("CLICK_LEFT");
-            } 
-            // Long Press detection (Right Click)
-            else if (!isMoving && duration >= 500 && e.changedTouches.length === 1) {
+            } else if (!isMoving && duration >= 450 && e.changedTouches.length === 1) {
                 sendCmd("CLICK_RIGHT");
             }
         });
