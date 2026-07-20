@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🏥 وحدة التحكم عن بُعد البيطرية الشاملة</title>
+
+    <!-- Manifest Meta for PWABuilder -->
+    <meta name="theme-color" content="#0b1329">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -40,7 +47,6 @@
             overflow: hidden;
         }
 
-        /* Top Header Navigation */
         .header {
             padding: 10px 14px;
             background: rgba(15, 23, 42, 0.85);
@@ -125,7 +131,6 @@
             transform: scale(0.95);
         }
 
-        /* Quick Action Bar / Groups Navigation */
         .actions-bar {
             display: flex;
             gap: 8px;
@@ -163,7 +168,6 @@
             border-color: var(--medical-cyan);
         }
 
-        /* Main Display Screen Viewport */
         .viewport {
             flex: 1;
             position: relative;
@@ -195,7 +199,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Bottom Controls Pad */
         .controls-container {
             background: rgba(15, 23, 42, 0.95);
             border-top: 1px solid var(--border-color);
@@ -232,20 +235,10 @@
             background: var(--primary-blue);
             transform: scale(0.95);
         }
-
-        .ctrl-btn.accent-btn {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(124, 58, 237, 0.5));
-            border-color: rgba(167, 139, 250, 0.4);
-        }
-
-        .ctrl-btn.accent-btn:active {
-            background: var(--purple-accent);
-        }
     </style>
 </head>
 <body>
 
-    <!-- Header Navigation Bar -->
     <div class="header">
         <div class="brand-status">
             <div class="status-badge">
@@ -259,7 +252,6 @@
         </div>
     </div>
 
-    <!-- Quick Navigation / Application Groups Bar -->
     <div class="actions-bar">
         <button class="app-btn" onclick="openForm('POS')">🛒 الفواتير</button>
         <button class="app-btn" onclick="openForm('GROUP_SALES')">📊 المبيعات</button>
@@ -272,13 +264,11 @@
         <button class="app-btn" onclick="sendCmd('SHOW_QR')">📱 QR المتجر</button>
     </div>
 
-    <!-- Live Screen Viewport & Touch Surface -->
     <div class="viewport" id="touchArea">
         <span class="touch-hint">👆 المس ومرر للتحكم بالماوس | ضغطة للكليك الشمال | ضغطة مطولة للكليك اليمين</span>
         <img id="screenView" src="" alt="بانتظار البث الحي...">
     </div>
 
-    <!-- Bottom Mouse & Controls Panel -->
     <div class="controls-container">
         <div class="controls-grid">
             <button class="ctrl-btn" onclick="sendCmd('CLICK_LEFT')">
@@ -307,17 +297,35 @@
         let touchStartTime = 0;
         let isMoving = false;
 
+        // حفظ واسترجاع الـ IP تلقائياً
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedIp = localStorage.getItem('last_connected_ip');
+            if (savedIp) {
+                document.getElementById('ipAddress').value = savedIp;
+            }
+        });
+
         function connect() {
-            const ip = document.getElementById('ipAddress').value.trim();
+            let ip = document.getElementById('ipAddress').value.trim();
             if (!ip) return alert("يرجى إدخال IP الكمبيوتر أولاً");
+
+            localStorage.setItem('last_connected_ip', ip);
 
             const statusDot = document.getElementById('statusDot');
             const statusText = document.getElementById('statusText');
 
             statusText.innerText = "جاري الاتصال...";
             
+            if (ws) {
+                ws.close();
+            }
+
+            // لتجاوز حظر الأندرويد للمحتوى غير المشفر، نحدد البوتوكول تلقائياً
+            // إذا كان الـ IP يشتمل على http/https نأخذه كما هو، وإلا نستخدم ws البروتوكول الافتراضي
+            let wsUrl = ip.startsWith("ws://") || ip.startsWith("wss://") ? ip : `ws://${ip}:8080`;
+
             try {
-                ws = new WebSocket(`ws://${ip}:8080`);
+                ws = new WebSocket(wsUrl);
 
                 ws.onopen = () => {
                     statusDot.classList.add('online');
@@ -329,14 +337,14 @@
                     statusText.innerText = "مفصول";
                 };
 
-                ws.onerror = () => {
+                ws.onerror = (err) => {
                     statusDot.classList.remove('online');
-                    statusText.innerText = "خطأ بالمطب";
+                    statusText.innerText = "خطأ بالاتصال";
                 };
 
                 ws.onmessage = (event) => {
                     const data = event.data;
-                    if (data.startsWith("FRAME|")) {
+                    if (typeof data === "string" && data.startsWith("FRAME|")) {
                         const base64Image = data.substring(6);
                         document.getElementById('screenView').src = "data:image/jpeg;base64," + base64Image;
                     }
@@ -356,7 +364,7 @@
             sendCmd("OPEN_FORM|" + formKey);
         }
 
-        // Advanced Touchpad Controller Logic
+        // Touch Control Logic
         const touchArea = document.getElementById('touchArea');
 
         touchArea.addEventListener('touchstart', (e) => {
@@ -366,7 +374,6 @@
                 touchStartTime = Date.now();
                 isMoving = false;
             } else if (e.touches.length === 2) {
-                // Two-finger tap detection for Right Click
                 lastTouchY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
             }
         }, { passive: true });
@@ -386,7 +393,6 @@
                     lastTouchY = currentY;
                 }
             } else if (e.touches.length === 2) {
-                // Two-finger Scroll
                 let currentY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
                 let deltaY = Math.round((currentY - lastTouchY) * 3);
                 
@@ -400,11 +406,9 @@
         touchArea.addEventListener('touchend', (e) => {
             const duration = Date.now() - touchStartTime;
 
-            // Single tap detection (Left Click) if not moved
             if (!isMoving && duration < 250 && e.changedTouches.length === 1) {
                 sendCmd("CLICK_LEFT");
             } 
-            // Long Press detection (Right Click)
             else if (!isMoving && duration >= 500 && e.changedTouches.length === 1) {
                 sendCmd("CLICK_RIGHT");
             }
