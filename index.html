@@ -3,27 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🏥 وحدة التحكم البيطرية الاحترافية</title>
+    <title>🏥 وحدة التحكم عن بُعد البيطرية الشاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Medical Light Palette */
-            --bg-page: #f0f4f8; /* رمادي طبي فاتح جدا */
-            --bg-panel: #ffffff; /* أبيض ناصع للبطاقات */
-            --header-bg: #ffffff;
-            
-            --primary-blue: #0284c7; /* أزرق طبي أساسي */
-            --primary-hover: #0369a1;
-            --medical-cyan: #22d3ee;
+            --bg-dark: #0b1329;
+            --card-bg: rgba(23, 37, 84, 0.6);
+            --border-color: rgba(56, 189, 248, 0.2);
+            --primary-blue: #0284c7;
+            --medical-cyan: #06b6d4;
             --medical-green: #10b981;
             --medical-red: #ef4444;
-            
-            --text-main: #1e293b; /* نصوص داكنة وواضحة */
-            --text-muted: #64748b;
-            --border-color: #e2e8f0; /* حدود فاتحة جدا */
-            
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --purple-accent: #8b5cf6;
+            --text-light: #f1f5f9;
         }
 
         * {
@@ -32,183 +24,155 @@
             -webkit-user-select: none;
             font-family: 'Cairo', system-ui, -apple-system, sans-serif;
             touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent; /* إزالة لون التحديد عند اللمس في الموبايل */
         }
 
         body {
             margin: 0;
             padding: 0;
-            background: var(--bg-page);
-            color: var(--text-main);
+            background: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(14, 116, 144, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
+            color: var(--text-light);
             display: flex;
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* --- Header Styling --- */
+        /* Top Header Navigation */
         .header {
-            padding: 10px 16px;
-            background: var(--header-bg);
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
             z-index: 100;
         }
 
-        .brand-zone {
+        .brand-status {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .main-logo {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--primary-blue);
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            gap: 8px;
         }
 
         .status-badge {
             display: flex;
             align-items: center;
             gap: 6px;
-            background: #f1f5f9;
-            padding: 5px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
             border-radius: 20px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 12px;
             font-weight: 700;
-            color: var(--text-muted);
         }
 
         .status-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: #94a3b8; /* Gray when disconnected */
+            background: var(--medical-red);
+            box-shadow: 0 0 8px var(--medical-red);
             transition: all 0.3s ease;
         }
 
         .status-dot.online {
             background: var(--medical-green);
-            box-shadow: 0 0 8px var(--medical-green);
+            box-shadow: 0 0 10px var(--medical-green);
         }
 
-        /* --- Device Switcher Styling --- */
-        .device-management {
+        .connection-box {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .device-selector {
-            background: var(--bg-panel);
+        .ip-input {
+            background: rgba(15, 23, 42, 0.9);
             border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 7px 12px;
+            color: var(--medical-cyan);
+            padding: 6px 10px;
             border-radius: 8px;
-            font-weight: 600;
+            width: 130px;
+            text-align: center;
+            font-weight: bold;
             font-size: 13px;
             outline: none;
-            cursor: pointer;
             transition: border-color 0.2s;
         }
 
-        .device-selector:focus {
-            border-color: var(--primary-blue);
+        .ip-input:focus {
+            border-color: var(--medical-cyan);
         }
 
         .btn-connect {
-            background: var(--primary-blue);
+            background: linear-gradient(135deg, var(--primary-blue), var(--medical-cyan));
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 8px;
             font-weight: bold;
             font-size: 13px;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .btn-connect:hover {
-            background: var(--primary-hover);
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+            transition: transform 0.1s, opacity 0.2s;
         }
 
         .btn-connect:active {
-            transform: scale(0.96);
-        }
-        
-        .btn-connect.disconnect {
-            background: var(--medical-red);
+            transform: scale(0.95);
         }
 
-        /* --- App Actions Bar (Scrollable) --- */
+        /* Quick Action Bar / Groups Navigation */
         .actions-bar {
             display: flex;
             gap: 8px;
-            padding: 10px 16px;
+            padding: 8px 12px;
             overflow-x: auto;
-            background: var(--bg-panel);
+            background: rgba(15, 23, 42, 0.6);
             border-bottom: 1px solid var(--border-color);
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none;
         }
 
         .actions-bar::-webkit-scrollbar {
-            display: none; /* Chrome/Safari */
+            display: none;
         }
 
         .app-btn {
-            background: #f8fafc;
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 14px;
+            color: var(--text-light);
+            padding: 7px 13px;
             border-radius: 10px;
             font-size: 12px;
             font-weight: 700;
             white-space: nowrap;
             cursor: pointer;
+            backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             transition: all 0.2s ease;
         }
 
-        .app-btn:hover {
-            background: #f1f5f9;
-            border-color: #cbd5e1;
-        }
-
         .app-btn:active {
-            transform: scale(0.95);
-            background: #e2e8f0;
-        }
-        
-        /* Icons for buttons (using simple text for this example, replace with SVGs for best look) */
-        .app-btn::before {
-            font-size: 14px;
+            transform: scale(0.94);
+            background: var(--primary-blue);
+            border-color: var(--medical-cyan);
         }
 
-        /* --- Main Viewport (Enhanced Quality Look) --- */
+        /* Main Display Screen Viewport */
         .viewport {
             flex: 1;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #000000; /* خلفية سوداء تماماً تعطي انطباع بتباين وجودة أعلى للصورة */
+            background: #020617;
             overflow: hidden;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
-            margin: 10px;
-            border-radius: 12px;
-            border: 2px solid var(--border-color);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
         }
 
         #screenView {
@@ -216,156 +180,121 @@
             max-height: 100%;
             object-fit: contain;
             pointer-events: none;
-            /* تحسين جودة الصورة القادمة عبر الشبكة (تجعلها تبدو أنقى) */
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-            /* إذا كانت دقة الصورة منخفضة جداً، هذا الخيار يجعلها حادة بأسلوب بكسلي بدلاً من أن تكون مغبشة */
-            /* image-rendering: pixelated; */ 
         }
 
         .touch-hint {
             position: absolute;
-            bottom: 15px;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 6px 15px;
-            border-radius: 20px;
+            top: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 12px;
+            border-radius: 12px;
             font-size: 11px;
-            color: #1e293b;
+            color: rgba(255, 255, 255, 0.7);
             pointer-events: none;
             backdrop-filter: blur(4px);
-            border: 1px solid rgba(0,0,0,0.1);
-            font-weight: 600;
-            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* --- Bottom Controls Panel --- */
+        /* Bottom Controls Pad */
         .controls-container {
-            background: var(--bg-panel);
+            background: rgba(15, 23, 42, 0.95);
             border-top: 1px solid var(--border-color);
-            padding: 12px 16px;
-            padding-bottom: calc(12px + env(safe-area-inset-bottom)); /* Support for modern phones */
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .controls-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
         }
 
         .ctrl-btn {
-            background: #f8fafc;
-            color: var(--text-main);
+            background: rgba(30, 41, 59, 0.8);
+            color: var(--text-light);
             border: 1px solid var(--border-color);
-            padding: 12px 5px;
-            border-radius: 12px;
+            padding: 10px 4px;
+            border-radius: 10px;
             font-size: 12px;
             font-weight: 700;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 3px;
             cursor: pointer;
-            transition: all 0.15s;
-        }
-        
-        .ctrl-btn i {
-            font-size: 18px;
-            color: var(--primary-blue);
+            transition: background 0.15s, transform 0.1s;
         }
 
         .ctrl-btn:active {
             background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
             transform: scale(0.95);
         }
-        
-        .ctrl-btn:active i {
-            color: white;
+
+        .ctrl-btn.accent-btn {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(124, 58, 237, 0.5));
+            border-color: rgba(167, 139, 250, 0.4);
         }
 
-        /* مظهر خاص لأزرار الماوس */
-        .mouse-btn {
-            background: #f1f5f9;
-            border-color: #cbd5e1;
+        .ctrl-btn.accent-btn:active {
+            background: var(--purple-accent);
         }
-
     </style>
-    <!-- إضافة مكتبة أيقونات خارجية لمظهر احترافي (FontAwesome) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
     <!-- Header Navigation Bar -->
     <div class="header">
-        <div class="brand-zone">
-            <div class="main-logo">
-                <i class="fas fa-clinic-medical"></i>
-                <span>بيطري Pro</span>
-            </div>
+        <div class="brand-status">
             <div class="status-badge">
                 <span id="statusDot" class="status-dot"></span>
                 <span id="statusText">مفصول</span>
             </div>
         </div>
-        
-        <div class="device-management">
-            <!-- مسوتش التبديل بين الأجهزة -->
-            <select id="deviceSelect" class="device-selector" onchange="onDeviceChange()">
-                <option value="192.168.1.100" selected>الجهاز الرئيسي (عيادة)</option>
-                <option value="192.168.1.105">جهاز الاستقبال</option>
-                <option value="10.0.0.5">جهاز العمليات</option>
-                <option value="custom">إدخال يدوي...</option>
-            </select>
-            
-            <!-- حقل الإدخال اليدوي (مخفي افتراضياً) -->
-            <input type="text" id="ipAddress" class="ip-input" value="192.168.1.100" placeholder="0.0.0.0" style="display:none; width: 110px; padding: 7px; border-radius: 8px; border: 1px solid #ccc;">
-
-            <button id="connectBtn" class="btn-connect" onclick="toggleConnect()">
-                <i class="fas fa-plug"></i>
-                <span id="btnText">اتصال</span>
-            </button>
+        <div class="connection-box">
+            <input type="text" id="ipAddress" class="ip-input" value="192.168.1.100" placeholder="عنوان IP">
+            <button class="btn-connect" onclick="connect()">اتصال</button>
         </div>
     </div>
 
     <!-- Quick Navigation / Application Groups Bar -->
     <div class="actions-bar">
-        <button class="app-btn" onclick="openForm('POS')"><i class="fas fa-shopping-cart" style="color: #eab308;"></i> الفواتير</button>
-        <button class="app-btn" onclick="openForm('GROUP_SALES')"><i class="fas fa-chart-line" style="color: #3b82f6;"></i> المبيعات</button>
-        <button class="app-btn" onclick="openForm('GROUP_ITEMS')"><i class="fas fa-pills" style="color: #ef4444;"></i> الأصناف</button>
-        <button class="app-btn" onclick="openForm('GROUP_STOCK')"><i class="fas fa-box" style="color: #8b5cf6;"></i> المخزن</button>
-        <button class="app-btn" onclick="openForm('GROUP_USERS')"><i class="fas fa-paw" style="color: #10b981;"></i> العملاء والحيوانات</button>
-        <button class="app-btn" onclick="openForm('GROUP_SETTINGS')"><i class="fas fa-cogs" style="color: #64748b;"></i> الإعدادات</button>
+        <button class="app-btn" onclick="openForm('POS')">🛒 الفواتير</button>
+        <button class="app-btn" onclick="openForm('GROUP_SALES')">📊 المبيعات</button>
+        <button class="app-btn" onclick="openForm('GROUP_ITEMS')">💊 الأصناف</button>
+        <button class="app-btn" onclick="openForm('GROUP_STOCK')">📦 المخزن والمستودعات</button>
+        <button class="app-btn" onclick="openForm('GROUP_ORDERS')">📋 الطلبيات</button>
+        <button class="app-btn" onclick="openForm('GROUP_USERS')">🐾 العملاء والحيوانات</button>
+        <button class="app-btn" onclick="openForm('GROUP_OFFERS')">🎁 العروض والخصومات</button>
+        <button class="app-btn" onclick="openForm('GROUP_SETTINGS')">⚙️ الإعدادات</button>
+        <button class="app-btn" onclick="sendCmd('SHOW_QR')">📱 QR المتجر</button>
     </div>
 
     <!-- Live Screen Viewport & Touch Surface -->
     <div class="viewport" id="touchArea">
-        <!-- خلفية سوداء سادة بانتظار الصورة -->
-        <img id="screenView" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="بانتظار البث الحي...">
-        <div class="touch-hint">
-            <i class="fas fa-fingerprint"></i> تلميح: مرر للتحكم بالماوس، ضغطة للكليك، ضغطة مطولة لليمين
-        </div>
+        <span class="touch-hint">👆 المس ومرر للتحكم بالماوس | ضغطة للكليك الشمال | ضغطة مطولة للكليك اليمين</span>
+        <img id="screenView" src="" alt="بانتظار البث الحي...">
     </div>
 
     <!-- Bottom Mouse & Controls Panel -->
     <div class="controls-container">
         <div class="controls-grid">
-            <button class="ctrl-btn mouse-btn" onclick="sendCmd('CLICK_LEFT')">
-                <i class="fas fa-mouse-pointer"></i>
+            <button class="ctrl-btn" onclick="sendCmd('CLICK_LEFT')">
+                <span>🖱️</span>
                 <span>كليك شمال</span>
             </button>
-            <button class="ctrl-btn mouse-btn" onclick="sendCmd('CLICK_RIGHT')">
-                <i class="fas fa-mouse"></i>
+            <button class="ctrl-btn" onclick="sendCmd('CLICK_RIGHT')">
+                <span>🖱️</span>
                 <span>كليك يمين</span>
             </button>
             <button class="ctrl-btn" onclick="sendCmd('SCROLL|120')">
-                <i class="fas fa-chevron-up"></i>
+                <span>🔼</span>
                 <span>أعلى</span>
             </button>
             <button class="ctrl-btn" onclick="sendCmd('SCROLL|-120')">
-                <i class="fas fa-chevron-down"></i>
+                <span>🔽</span>
                 <span>أسفل</span>
             </button>
         </div>
@@ -377,131 +306,44 @@
         let lastTouchY = 0;
         let touchStartTime = 0;
         let isMoving = false;
-        let isConnected = false;
-
-        // دالة للتعامل مع تغيير الجهاز من القائمة
-        function onDeviceChange() {
-            const selector = document.getElementById('deviceSelect');
-            const ipInput = document.getElementById('ipAddress');
-            
-            if (selector.value === 'custom') {
-                ipInput.style.display = 'inline-block';
-                ipInput.value = '';
-                ipInput.focus();
-            } else {
-                ipInput.style.display = 'none';
-                ipInput.value = selector.value;
-            }
-            
-            // إذا كنا متصلين، وقمنا بتغيير الجهاز، نغلق الاتصال الحالي
-            if (isConnected) {
-                disconnect();
-            }
-        }
-
-        function toggleConnect() {
-            if (isConnected) {
-                disconnect();
-            } else {
-                connect();
-            }
-        }
 
         function connect() {
-            const ipInput = document.getElementById('ipAddress');
-            const ip = ipInput.value.trim();
-            
-            if (!ip) {
-                alert("يرجى اختيار جهاز أو إدخال IP صحيح");
-                return;
-            }
+            const ip = document.getElementById('ipAddress').value.trim();
+            if (!ip) return alert("يرجى إدخال IP الكمبيوتر أولاً");
 
             const statusDot = document.getElementById('statusDot');
             const statusText = document.getElementById('statusText');
-            const connectBtn = document.getElementById('connectBtn');
-            const btnText = document.getElementById('btnText');
 
             statusText.innerText = "جاري الاتصال...";
-            btnText.innerText = "جاري...";
-            connectBtn.disabled = true;
             
             try {
-                // نستخدم المنفذ 8080 كما في الكود الأصلي
                 ws = new WebSocket(`ws://${ip}:8080`);
 
                 ws.onopen = () => {
-                    isConnected = true;
                     statusDot.classList.add('online');
                     statusText.innerText = "متصل حي";
-                    statusText.style.color = "var(--medical-green)";
-                    
-                    connectBtn.disabled = false;
-                    connectBtn.classList.add('disconnect');
-                    btnText.innerText = "قطع الاتصال";
-                    // إخفاء التلميح بعد الاتصال بفترة
-                    setTimeout(()=> {
-                        document.querySelector('.touch-hint').style.opacity = '0.5';
-                    }, 5000);
                 };
 
                 ws.onclose = () => {
-                    handleDisconnectReset();
+                    statusDot.classList.remove('online');
+                    statusText.innerText = "مفصول";
                 };
 
                 ws.onerror = () => {
-                    handleDisconnectReset();
-                    alert("تعذر الاتصال بالجهاز. تأكد من عمل السيرفر على الكمبيوتر ومن صحة الـ IP");
+                    statusDot.classList.remove('online');
+                    statusText.innerText = "خطأ بالمطب";
                 };
 
                 ws.onmessage = (event) => {
                     const data = event.data;
-                    if (data instanceof Blob) {
-                        // إذا كانت البيانات باينري (أفضل للأداء والجودة)
-                        const reader = new FileReader();
-                        reader.onload = function() {
-                            document.getElementById('screenView').src = reader.result;
-                        };
-                        reader.readAsDataURL(data);
-                    } else if (typeof data === 'string' && data.startsWith("FRAME|")) {
-                        // إذا كانت البيانات Base64 كما في كودك الأصلي
+                    if (data.startsWith("FRAME|")) {
                         const base64Image = data.substring(6);
                         document.getElementById('screenView').src = "data:image/jpeg;base64," + base64Image;
                     }
                 };
             } catch (err) {
-                handleDisconnectReset();
-                alert("خطأ في إنشاء الاتصال: " + err.message);
+                alert("تعذر إنشاء الاتصال: " + err.message);
             }
-        }
-
-        function disconnect() {
-            if (ws) {
-                ws.close();
-            }
-            handleDisconnectReset();
-        }
-
-        // إعادة تعيين واجهة المستخدم عند انقطاع الاتصال
-        function handleDisconnectReset() {
-            isConnected = false;
-            ws = null;
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('statusText');
-            const connectBtn = document.getElementById('connectBtn');
-            const btnText = document.getElementById('btnText');
-            const screenView = document.getElementById('screenView');
-
-            statusDot.classList.remove('online');
-            statusText.innerText = "مفصول";
-            statusText.style.color = "var(--text-muted)";
-            
-            connectBtn.disabled = false;
-            connectBtn.classList.remove('disconnect');
-            btnText.innerText = "اتصال";
-            
-            // وضع صورة فارغة عند الفصل
-            screenView.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-            document.querySelector('.touch-hint').style.opacity = '1';
         }
 
         function sendCmd(cmd) {
@@ -511,32 +353,29 @@
         }
 
         function openForm(formKey) {
-            // إضافة تأثير بصري بسيط عند الضغط
             sendCmd("OPEN_FORM|" + formKey);
         }
 
-        // --- Advanced Touchpad Controller Logic (Keep original logic, just maintain) ---
+        // Advanced Touchpad Controller Logic
         const touchArea = document.getElementById('touchArea');
 
         touchArea.addEventListener('touchstart', (e) => {
-            if (!isConnected) return;
             if (e.touches.length === 1) {
                 lastTouchX = e.touches[0].clientX;
                 lastTouchY = e.touches[0].clientY;
                 touchStartTime = Date.now();
                 isMoving = false;
             } else if (e.touches.length === 2) {
+                // Two-finger tap detection for Right Click
                 lastTouchY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
             }
         }, { passive: true });
 
         touchArea.addEventListener('touchmove', (e) => {
-            if (!isConnected) return;
             if (e.touches.length === 1) {
                 let currentX = e.touches[0].clientX;
                 let currentY = e.touches[0].clientY;
 
-                // معامل السرعة 1.7
                 let deltaX = Math.round((currentX - lastTouchX) * 1.7);
                 let deltaY = Math.round((currentY - lastTouchY) * 1.7);
 
@@ -547,7 +386,7 @@
                     lastTouchY = currentY;
                 }
             } else if (e.touches.length === 2) {
-                // تスクロール بإصبعين
+                // Two-finger Scroll
                 let currentY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
                 let deltaY = Math.round((currentY - lastTouchY) * 3);
                 
@@ -559,14 +398,13 @@
         }, { passive: true });
 
         touchArea.addEventListener('touchend', (e) => {
-            if (!isConnected) return;
             const duration = Date.now() - touchStartTime;
 
-            // ضغطة سريعة (كليك شمال)
+            // Single tap detection (Left Click) if not moved
             if (!isMoving && duration < 250 && e.changedTouches.length === 1) {
                 sendCmd("CLICK_LEFT");
             } 
-            // ضغطة مطولة (كليك يمين)
+            // Long Press detection (Right Click)
             else if (!isMoving && duration >= 500 && e.changedTouches.length === 1) {
                 sendCmd("CLICK_RIGHT");
             }
