@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🏥 وحدة التحكم عن بُعد البيطرية الشاملة</title>
+    <title>🏥 وحدة التحكم المباشر واللمس الشاملة</title>
 
-    <!-- Manifest Meta for PWABuilder -->
     <meta name="theme-color" content="#0b1329">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,8 +14,8 @@
     <style>
         :root {
             --bg-dark: #0b1329;
-            --card-bg: rgba(23, 37, 84, 0.6);
-            --border-color: rgba(56, 189, 248, 0.2);
+            --card-bg: rgba(23, 37, 84, 0.7);
+            --border-color: rgba(56, 189, 248, 0.25);
             --primary-blue: #0284c7;
             --medical-cyan: #06b6d4;
             --medical-green: #10b981;
@@ -37,9 +36,6 @@
             margin: 0;
             padding: 0;
             background: var(--bg-dark);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(14, 116, 144, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
             color: var(--text-light);
             display: flex;
             flex-direction: column;
@@ -47,21 +43,23 @@
             overflow: hidden;
         }
 
+        /* الهيدر العلوي */
         .header {
-            padding: 10px 14px;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
+            padding: 6px 10px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid var(--border-color);
             z-index: 100;
+            height: 50px;
         }
 
         .brand-status {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .status-badge {
@@ -69,171 +67,185 @@
             align-items: center;
             gap: 6px;
             background: rgba(255, 255, 255, 0.05);
-            padding: 4px 10px;
-            border-radius: 20px;
+            padding: 3px 8px;
+            border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
         }
 
         .status-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: var(--medical-red);
-            box-shadow: 0 0 8px var(--medical-red);
-            transition: all 0.3s ease;
+            box-shadow: 0 0 6px var(--medical-red);
         }
 
         .status-dot.online {
             background: var(--medical-green);
-            box-shadow: 0 0 10px var(--medical-green);
+            box-shadow: 0 0 8px var(--medical-green);
         }
 
         .connection-box {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .ip-input {
             background: rgba(15, 23, 42, 0.9);
             border: 1px solid var(--border-color);
             color: var(--medical-cyan);
-            padding: 6px 10px;
-            border-radius: 8px;
-            width: 130px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            width: 120px;
             text-align: center;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
             outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .ip-input:focus {
-            border-color: var(--medical-cyan);
         }
 
         .btn-connect {
             background: linear-gradient(135deg, var(--primary-blue), var(--medical-cyan));
             color: white;
             border: none;
-            padding: 6px 14px;
-            border-radius: 8px;
+            padding: 5px 12px;
+            border-radius: 6px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
-            transition: transform 0.1s, opacity 0.2s;
         }
 
-        .btn-connect:active {
-            transform: scale(0.95);
-        }
-
+        /* شريط التطبيقات */
         .actions-bar {
             display: flex;
-            gap: 8px;
-            padding: 8px 12px;
+            gap: 6px;
+            padding: 6px 8px;
             overflow-x: auto;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.7);
             border-bottom: 1px solid var(--border-color);
             scrollbar-width: none;
+            white-space: nowrap;
         }
 
-        .actions-bar::-webkit-scrollbar {
-            display: none;
-        }
+        .actions-bar::-webkit-scrollbar { display: none; }
 
         .app-btn {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-light);
-            padding: 7px 13px;
-            border-radius: 10px;
-            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 11px;
             font-weight: 700;
-            white-space: nowrap;
             cursor: pointer;
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s ease;
         }
 
-        .app-btn:active {
-            transform: scale(0.94);
-            background: var(--primary-blue);
-            border-color: var(--medical-cyan);
-        }
-
+        /* منطقة العرض الرئيسية للكمبيوتر */
         .viewport {
             flex: 1;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #020617;
+            background: #000;
             overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            touch-action: none; /* إلغاء التمرير المباشر للمتصفح لتسهيل اللمس المباشر */
         }
 
         #screenView {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            pointer-events: none;
+            width: 100%;
+            height: 100%;
+            object-fit: fill; /* ملء الشاشة بالكامل لتطابق التاتش 1:1 */
+            display: block;
         }
 
-        .touch-hint {
-            position: absolute;
-            top: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.7);
-            pointer-events: none;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
+        /* لوحة التحكم والكيبورد */
         .controls-container {
             background: rgba(15, 23, 42, 0.95);
             border-top: 1px solid var(--border-color);
-            padding: 8px 12px;
+            padding: 6px 10px;
             display: flex;
             flex-direction: column;
             gap: 6px;
+            z-index: 100;
+        }
+
+        .keyboard-drawer {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .hidden-input {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--medical-cyan);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .btn-key-action {
+            background: var(--purple-accent);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .quick-keys {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+        }
+
+        .quick-key-btn {
+            background: rgba(51, 65, 85, 0.8);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
         }
 
         .controls-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            gap: 8px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
         }
 
         .ctrl-btn {
             background: rgba(30, 41, 59, 0.8);
             color: var(--text-light);
             border: 1px solid var(--border-color);
-            padding: 10px 4px;
-            border-radius: 10px;
-            font-size: 12px;
+            padding: 6px 2px;
+            border-radius: 8px;
+            font-size: 11px;
             font-weight: 700;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 3px;
+            gap: 4px;
             cursor: pointer;
-            transition: background 0.15s, transform 0.1s;
         }
 
-        .ctrl-btn:active {
+        .ctrl-btn:active, .quick-key-btn:active, .app-btn:active {
             background: var(--primary-blue);
-            transform: scale(0.95);
         }
     </style>
 </head>
@@ -256,48 +268,56 @@
         <button class="app-btn" onclick="openForm('POS')">🛒 الفواتير</button>
         <button class="app-btn" onclick="openForm('GROUP_SALES')">📊 المبيعات</button>
         <button class="app-btn" onclick="openForm('GROUP_ITEMS')">💊 الأصناف</button>
-        <button class="app-btn" onclick="openForm('GROUP_STOCK')">📦 المخزن والمستودعات</button>
+        <button class="app-btn" onclick="openForm('GROUP_STOCK')">📦 المستودعات</button>
         <button class="app-btn" onclick="openForm('GROUP_ORDERS')">📋 الطلبيات</button>
-        <button class="app-btn" onclick="openForm('GROUP_USERS')">🐾 العملاء والحيوانات</button>
-        <button class="app-btn" onclick="openForm('GROUP_OFFERS')">🎁 العروض والخصومات</button>
+        <button class="app-btn" onclick="openForm('GROUP_USERS')">🐾 العملاء</button>
+        <button class="app-btn" onclick="openForm('GROUP_OFFERS')">🎁 العروض</button>
         <button class="app-btn" onclick="openForm('GROUP_SETTINGS')">⚙️ الإعدادات</button>
         <button class="app-btn" onclick="sendCmd('SHOW_QR')">📱 QR المتجر</button>
     </div>
 
+    <!-- شاشة العرض المباشر مع دعم التاتش اللحظي المباشر -->
     <div class="viewport" id="touchArea">
-        <span class="touch-hint">👆 المس ومرر للتحكم بالماوس | ضغطة للكليك الشمال | ضغطة مطولة للكليك اليمين</span>
-        <img id="screenView" src="" alt="بانتظار البث الحي...">
+        <img id="screenView" src="" alt="بانتظار الاتصال والبث الحي...">
     </div>
 
     <div class="controls-container">
+        <!-- حقل الكيبورد والكتابة السريعة -->
+        <div class="keyboard-drawer">
+            <input type="text" id="textInput" class="hidden-input" placeholder="اكتب هنا لإرسال النص فوراً..." oninput="onTextInput(this)">
+            <button class="btn-key-action" onclick="focusInput()">⌨️ الكيبورد</button>
+        </div>
+
+        <!-- أزرار الاختصارات والمفاتيح السريعة -->
+        <div class="quick-keys">
+            <button class="quick-key-btn" onclick="sendKeyPress('ENTER')">⏎ Enter</button>
+            <button class="quick-key-btn" onclick="sendKeyPress('BACKSPACE')">⌫ مسح</button>
+            <button class="quick-key-btn" onclick="sendKeyPress('TAB')">⇥ Tab</button>
+            <button class="quick-key-btn" onclick="sendKeyPress('SPACE')">⎵ مسافة</button>
+            <button class="quick-key-btn" onclick="sendKeyPress('ESC')">Esc</button>
+            <button class="quick-key-btn" onclick="sendKeyPress('UP')">▲ أعلى</button>
+            <button class="quick-key-btn" onclick="sendKeyPress('DOWN')">▼ أسفل</button>
+            <button class="quick-key-btn" onclick="sendKeyPress('LEFT')">◄ يسار</button>
+            <button class="quick-key-btn" onclick="sendKeyPress('RIGHT')">► يمين</button>
+        </div>
+
         <div class="controls-grid">
-            <button class="ctrl-btn" onclick="sendCmd('CLICK_LEFT')">
-                <span>🖱️</span>
-                <span>كليك شمال</span>
-            </button>
-            <button class="ctrl-btn" onclick="sendCmd('CLICK_RIGHT')">
-                <span>🖱️</span>
-                <span>كليك يمين</span>
-            </button>
-            <button class="ctrl-btn" onclick="sendCmd('SCROLL|120')">
-                <span>🔼</span>
-                <span>أعلى</span>
-            </button>
-            <button class="ctrl-btn" onclick="sendCmd('SCROLL|-120')">
-                <span>🔽</span>
-                <span>أسفل</span>
-            </button>
+            <button class="ctrl-btn" onclick="sendCmd('CLICK_LEFT')">🖱️ كليك شمال</button>
+            <button class="ctrl-btn" onclick="sendCmd('CLICK_RIGHT')">🖱️ كليك يمين</button>
+            <button class="ctrl-btn" onclick="sendCmd('SCROLL|120')">🔼 تمرير لأعلى</button>
+            <button class="ctrl-btn" onclick="sendCmd('SCROLL|-120')">🔽 تمرير لأسفل</button>
         </div>
     </div>
 
     <script>
         let ws = null;
-        let lastTouchX = 0;
-        let lastTouchY = 0;
-        let touchStartTime = 0;
-        let isMoving = false;
+        const touchArea = document.getElementById('touchArea');
+        const screenView = document.getElementById('screenView');
+        const textInput = document.getElementById('textInput');
 
-        // حفظ واسترجاع الـ IP تلقائياً
+        let isTouchActive = false;
+        let lastTouchTime = 0;
+
         window.addEventListener('DOMContentLoaded', () => {
             const savedIp = localStorage.getItem('last_connected_ip');
             if (savedIp) {
@@ -315,13 +335,9 @@
             const statusText = document.getElementById('statusText');
 
             statusText.innerText = "جاري الاتصال...";
-            
-            if (ws) {
-                ws.close();
-            }
 
-            // لتجاوز حظر الأندرويد للمحتوى غير المشفر، نحدد البوتوكول تلقائياً
-            // إذا كان الـ IP يشتمل على http/https نأخذه كما هو، وإلا نستخدم ws البروتوكول الافتراضي
+            if (ws) { ws.close(); }
+
             let wsUrl = ip.startsWith("ws://") || ip.startsWith("wss://") ? ip : `ws://${ip}:8080`;
 
             try {
@@ -337,16 +353,15 @@
                     statusText.innerText = "مفصول";
                 };
 
-                ws.onerror = (err) => {
+                ws.onerror = () => {
                     statusDot.classList.remove('online');
-                    statusText.innerText = "خطأ بالاتصال";
+                    statusText.innerText = "خطأ الاتصال";
                 };
 
                 ws.onmessage = (event) => {
                     const data = event.data;
                     if (typeof data === "string" && data.startsWith("FRAME|")) {
-                        const base64Image = data.substring(6);
-                        document.getElementById('screenView').src = "data:image/jpeg;base64," + base64Image;
+                        screenView.src = "data:image/jpeg;base64," + data.substring(6);
                     }
                 };
             } catch (err) {
@@ -364,53 +379,80 @@
             sendCmd("OPEN_FORM|" + formKey);
         }
 
-        // Touch Control Logic
-        const touchArea = document.getElementById('touchArea');
+        // ==========================================
+        // 🎯 اللمس المباشر المطلق (Absolute Direct Touch Control)
+        // ==========================================
+        
+        function handleTouchDirect(e, isClick = false) {
+            if (e.touches.length === 0 && !isClick) return;
+
+            const rect = screenView.getBoundingClientRect();
+            const touch = e.touches[0] || e.changedTouches[0];
+
+            // حساب الإحداثيات بالنسبة لشاشة العرض الحالية
+            const touchX = touch.clientX - rect.left;
+            const touchY = touch.clientY - rect.top;
+
+            // التأكد من أن اللمسة داخل نطاق الصورة
+            if (touchX >= 0 && touchX <= rect.width && touchY >= 0 && touchY <= rect.height) {
+                // تحويل الإحداثيات لنسبة مئوية لحساب موقع الماوس الدقيق على شاشة الكمبيوتر
+                const percentX = touchX / rect.width;
+                const percentY = touchY / rect.height;
+
+                // إرسال الأمر للكمبيوتر بنسبة موقع الأصبع
+                sendCmd(`TOUCH_ABS|${percentX.toFixed(4)}|${percentY.toFixed(4)}|${isClick ? 1 : 0}`);
+            }
+        }
 
         touchArea.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 1) {
-                lastTouchX = e.touches[0].clientX;
-                lastTouchY = e.touches[0].clientY;
-                touchStartTime = Date.now();
-                isMoving = false;
-            } else if (e.touches.length === 2) {
-                lastTouchY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-            }
-        }, { passive: true });
+            isTouchActive = true;
+            lastTouchTime = Date.now();
+            handleTouchDirect(e, false);
+        }, { passive: false });
 
         touchArea.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 1) {
-                let currentX = e.touches[0].clientX;
-                let currentY = e.touches[0].clientY;
-
-                let deltaX = Math.round((currentX - lastTouchX) * 1.7);
-                let deltaY = Math.round((currentY - lastTouchY) * 1.7);
-
-                if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) {
-                    isMoving = true;
-                    sendCmd(`MOVE|${deltaX}|${deltaY}`);
-                    lastTouchX = currentX;
-                    lastTouchY = currentY;
-                }
-            } else if (e.touches.length === 2) {
-                let currentY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-                let deltaY = Math.round((currentY - lastTouchY) * 3);
-                
-                if (Math.abs(deltaY) > 5) {
-                    sendCmd(`SCROLL|${deltaY}`);
-                    lastTouchY = currentY;
-                }
+            if (isTouchActive) {
+                handleTouchDirect(e, false);
             }
-        }, { passive: true });
+        }, { passive: false });
 
         touchArea.addEventListener('touchend', (e) => {
-            const duration = Date.now() - touchStartTime;
+            const touchDuration = Date.now() - lastTouchTime;
+            // إذا كانت الضغطة سريعة (أقل من 300 مللي ثانية) تعتبر نِقرة الماوس فوراً على مكان الأصبع
+            if (touchDuration < 300) {
+                handleTouchDirect(e, true);
+            }
+            isTouchActive = false;
+        });
 
-            if (!isMoving && duration < 250 && e.changedTouches.length === 1) {
-                sendCmd("CLICK_LEFT");
-            } 
-            else if (!isMoving && duration >= 500 && e.changedTouches.length === 1) {
-                sendCmd("CLICK_RIGHT");
+        // ==========================================
+        // ⌨️ إرسال مدخلات الكيبورد وحقول النصوص
+        // ==========================================
+
+        function focusInput() {
+            textInput.focus();
+        }
+
+        function onTextInput(input) {
+            const val = input.value;
+            if (val.length > 0) {
+                // إرسال النص المكتوب للكمبيوتر
+                sendCmd("KEY_TEXT|" + val);
+                // تفريغ الحقل لاستقبال الحرف التالي
+                input.value = "";
+            }
+        }
+
+        function sendKeyPress(keyName) {
+            sendCmd("KEY_PRESS|" + keyName);
+        }
+
+        // التعامل مع زر Enter أو Backspace المباشر من كيبورد الهاتف
+        textInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                sendKeyPress('ENTER');
+            } else if (e.key === 'Backspace' && textInput.value === '') {
+                sendKeyPress('BACKSPACE');
             }
         });
     </script>
