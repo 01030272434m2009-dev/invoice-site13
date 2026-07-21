@@ -29,7 +29,7 @@
             user-select: none;
             -webkit-user-select: none;
             font-family: 'Cairo', system-ui, -apple-system, sans-serif;
-            touch-action: none; /* منع التعارض مع إيماءات المتصفح */
+            touch-action: none;
         }
 
         body {
@@ -43,7 +43,6 @@
             overflow: hidden;
         }
 
-        /* الهيدر العلوي */
         .header {
             padding: 8px 12px;
             background: rgba(15, 23, 42, 0.95);
@@ -138,7 +137,6 @@
             transform: scale(0.95);
         }
 
-        /* شريط التطبيقات والأزرار */
         .actions-bar {
             display: flex;
             gap: 6px;
@@ -169,7 +167,6 @@
             background: var(--primary-blue);
         }
 
-        /* منطقة الشاشة العريضة وعرض البث الحي */
         .viewport {
             flex: 1;
             position: relative;
@@ -181,21 +178,19 @@
             cursor: crosshair;
         }
 
+        /* تعديلات الشاشة لزيادة حدة ووضوح العرض */
         #screenView {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
             display: block;
-
-            /* لتحسين وتوضيح جودة الصورة عند تحجيمها */
             image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-            image-rendering: pixelated;
+            image-rendering: smooth;
+            filter: contrast(105%) brightness(102%);
             border-radius: 4px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
         }
 
-        /* لوحة التحكم والمدخلات السفلية */
         .controls-container {
             background: rgba(15, 23, 42, 0.95);
             border-top: 1px solid var(--border-color);
@@ -290,7 +285,6 @@
 </head>
 <body>
 
-    <!-- الهيدر العلوي -->
     <div class="header">
         <div class="brand-status">
             <div class="status-badge">
@@ -304,7 +298,6 @@
         </div>
     </div>
 
-    <!-- أزرار الاختصارات والشاشات -->
     <div class="actions-bar">
         <button class="app-btn" onclick="openForm('POS')">🛒 الفواتير</button>
         <button class="app-btn" onclick="openForm('GROUP_SALES')">📊 المبيعات</button>
@@ -317,12 +310,10 @@
         <button class="app-btn" onclick="sendCmd('SHOW_QR')">📱 QR المتجر</button>
     </div>
 
-    <!-- شاشة العرض المباشر مع دعم التاتش المتطور والماوس -->
     <div class="viewport" id="touchArea">
         <img id="screenView" src="" alt="بانتظار الاتصال والبث الحي...">
     </div>
 
-    <!-- لوحة التحكم السفلية والكيبورد -->
     <div class="controls-container">
         <div class="keyboard-drawer">
             <input type="text" id="textInput" class="hidden-input" placeholder="اكتب هنا لإرسال النص للكمبيوتر..." oninput="onTextInput(this)">
@@ -358,7 +349,6 @@
         let isTouchActive = false;
         let touchStartTime = 0;
 
-        // استخراج الـ IP التلقائي من رابط الصفحة إذا وُجد
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const wsParam = urlParams.get('ws');
@@ -429,14 +419,8 @@
             sendCmd("OPEN_FORM|" + formKey);
         }
 
-        // ==========================================================
-        // 🎯 دعم اللمس والتاتش المباشر المطلق (Absolute Touch Logic)
-        // ==========================================================
-
         function getTouchCoordinates(clientX, clientY) {
             const rect = screenView.getBoundingClientRect();
-            
-            // التأكد من أن اللمس تم داخل حدود الصورة فقط
             const x = clientX - rect.left;
             const y = clientY - rect.top;
 
@@ -448,7 +432,6 @@
             return null;
         }
 
-        // بدء اللمس
         touchArea.addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (e.touches.length > 0) {
@@ -461,7 +444,6 @@
             }
         }, { passive: false });
 
-        // تحريك الأصبع (تتبع المؤشر)
         touchArea.addEventListener('touchmove', (e) => {
             e.preventDefault();
             if (isTouchActive && e.touches.length > 0) {
@@ -472,7 +454,6 @@
             }
         }, { passive: false });
 
-        // نهاية اللمس (رفع الأصبع أو النقرة السريعة)
         touchArea.addEventListener('touchend', (e) => {
             e.preventDefault();
             const touchDuration = Date.now() - touchStartTime;
@@ -481,10 +462,8 @@
                 const coords = getTouchCoordinates(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
                 if (coords) {
                     if (touchDuration < 250) {
-                        // نقرة لمس سريعة (Tap)
                         sendCmd(`TOUCH_TAP|${coords.percentX}|${coords.percentY}`);
                     } else {
-                        // إفلات بعد السحب (Touch Up)
                         sendCmd(`TOUCH_UP|${coords.percentX}|${coords.percentY}`);
                     }
                 }
@@ -492,7 +471,6 @@
             isTouchActive = false;
         }, { passive: false });
 
-        // دعم استخدام الماوس الخارجي إن وجد
         let isMouseDown = false;
         touchArea.addEventListener('mousedown', (e) => {
             isMouseDown = true;
@@ -514,10 +492,6 @@
         window.addEventListener('mouseup', () => {
             isMouseDown = false;
         });
-
-        // ==========================================
-        // ⌨️ الكيبورد والنصوص
-        // ==========================================
 
         function focusInput() {
             textInput.focus();
