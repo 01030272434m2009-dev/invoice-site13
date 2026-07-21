@@ -29,7 +29,7 @@
             user-select: none;
             -webkit-user-select: none;
             font-family: 'Cairo', system-ui, -apple-system, sans-serif;
-            touch-action: manipulation;
+            touch-action: none; /* منع أي تعارض مع إيماءات المتصفح */
         }
 
         body {
@@ -127,6 +127,7 @@
             border-bottom: 1px solid var(--border-color);
             scrollbar-width: none;
             white-space: nowrap;
+            touch-action: pan-x; /* السماح بالتمرير الأفقي فقط للشريط */
         }
 
         .actions-bar::-webkit-scrollbar { display: none; }
@@ -151,14 +152,16 @@
             justify-content: center;
             background: #000;
             overflow: hidden;
-            touch-action: none; /* إلغاء التمرير المباشر للمتصفح لتسهيل اللمس المباشر */
+            cursor: crosshair;
         }
 
         #screenView {
-            width: 100%;
-            height: 100%;
-            object-fit: fill; /* ملء الشاشة بالكامل لتطابق التاتش 1:1 */
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* الحفاظ على نسبة أبعاد الشاشة الحقيقية وبأعلى وضوح */
             display: block;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
 
         /* لوحة التحكم والكيبورد */
@@ -170,6 +173,7 @@
             flex-direction: column;
             gap: 6px;
             z-index: 100;
+            touch-action: pan-y;
         }
 
         .keyboard-drawer {
@@ -210,6 +214,7 @@
             overflow-x: auto;
             scrollbar-width: none;
             padding-bottom: 2px;
+            touch-action: pan-x;
         }
 
         .quick-key-btn {
@@ -276,7 +281,7 @@
         <button class="app-btn" onclick="sendCmd('SHOW_QR')">📱 QR المتجر</button>
     </div>
 
-    <!-- شاشة العرض المباشر مع دعم التاتش اللحظي المباشر -->
+    <!-- شاشة العرض المباشر مع دعم التاتش والماوس -->
     <div class="viewport" id="touchArea">
         <img id="screenView" src="" alt="بانتظار الاتصال والبث الحي...">
     </div>
@@ -380,49 +385,65 @@
         }
 
         // ==========================================
-        // 🎯 اللمس المباشر المطلق (Absolute Direct Touch Control)
+        // 🎯 تحكم الماوس واللمس الدقيق الاحترافي
         // ==========================================
         
-        function handleTouchDirect(e, isClick = false) {
-            if (e.touches.length === 0 && !isClick) return;
-
+        function sendRelativePointerPos(clientX, clientY, isClick = false) {
             const rect = screenView.getBoundingClientRect();
-            const touch = e.touches[0] || e.changedTouches[0];
 
-            // حساب الإحداثيات بالنسبة لشاشة العرض الحالية
-            const touchX = touch.clientX - rect.left;
-            const touchY = touch.clientY - rect.top;
+            // حساب الموضع بالنسبة للصورة المعروضة فقط
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
 
-            // التأكد من أن اللمسة داخل نطاق الصورة
-            if (touchX >= 0 && touchX <= rect.width && touchY >= 0 && touchY <= rect.height) {
-                // تحويل الإحداثيات لنسبة مئوية لحساب موقع الماوس الدقيق على شاشة الكمبيوتر
-                const percentX = touchX / rect.width;
-                const percentY = touchY / rect.height;
-
-                // إرسال الأمر للكمبيوتر بنسبة موقع الأصبع
-                sendCmd(`TOUCH_ABS|${percentX.toFixed(4)}|${percentY.toFixed(4)}|${isClick ? 1 : 0}`);
+            if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+                const percentX = (x / rect.width).toFixed(4);
+                const percentY = (y / rect.height).toFixed(4);
+                sendCmd(`TOUCH_ABS|${percentX}|${percentY}|${isClick ? 1 : 0}`);
             }
         }
 
+        // دعم أحداث اللمس (موبايل / تابليت)
         touchArea.addEventListener('touchstart', (e) => {
+            e.preventDefault();
             isTouchActive = true;
             lastTouchTime = Date.now();
-            handleTouchDirect(e, false);
+            const touch = e.touches[0];
+            sendRelativePointerPos(touch.clientX, touch.clientY, false);
         }, { passive: false });
 
         touchArea.addEventListener('touchmove', (e) => {
+            e.preventDefault();
             if (isTouchActive) {
-                handleTouchDirect(e, false);
+                const touch = e.touches[0];
+                sendRelativePointerPos(touch.clientX, touch.clientY, false);
             }
         }, { passive: false });
 
         touchArea.addEventListener('touchend', (e) => {
+            e.preventDefault();
             const touchDuration = Date.now() - lastTouchTime;
-            // إذا كانت الضغطة سريعة (أقل من 300 مللي ثانية) تعتبر نِقرة الماوس فوراً على مكان الأصبع
-            if (touchDuration < 300) {
-                handleTouchDirect(e, true);
+            if (touchDuration < 300 && e.changedTouches.length > 0) {
+                const touch = e.changedTouches[0];
+                sendRelativePointerPos(touch.clientX, touch.clientY, true);
             }
             isTouchActive = false;
+        }, { passive: false });
+
+        // دعم أحداث الماوس (عند استخدام كمبيوتر أو ماوس خارجي)
+        let isMouseDown = false;
+        touchArea.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            sendRelativePointerPos(e.clientX, e.clientY, true);
+        });
+
+        touchArea.addEventListener('mousemove', (e) => {
+            if (isMouseDown) {
+                sendRelativePointerPos(e.clientX, e.clientY, false);
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isMouseDown = false;
         });
 
         // ==========================================
@@ -436,9 +457,7 @@
         function onTextInput(input) {
             const val = input.value;
             if (val.length > 0) {
-                // إرسال النص المكتوب للكمبيوتر
                 sendCmd("KEY_TEXT|" + val);
-                // تفريغ الحقل لاستقبال الحرف التالي
                 input.value = "";
             }
         }
@@ -447,7 +466,6 @@
             sendCmd("KEY_PRESS|" + keyName);
         }
 
-        // التعامل مع زر Enter أو Backspace المباشر من كيبورد الهاتف
         textInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 sendKeyPress('ENTER');
