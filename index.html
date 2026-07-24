@@ -485,49 +485,65 @@
             }
         });
 
-        function connect() {
-            let ip = document.getElementById('ipAddress').value.trim();
-            if (!ip) return alert("يرجى إدخال IP الكمبيوتر أولاً");
+      function connect() {
+    let ip = document.getElementById('ipAddress').value.trim();
+    if (!ip) return alert("يرجى إدخال IP الكمبيوتر أولاً");
 
-            localStorage.setItem('last_connected_ip', ip);
+    localStorage.setItem('last_connected_ip', ip);
 
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('statusText');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
 
-            statusText.innerText = "جاري الاتصال...";
+    statusText.innerText = "جاري الاتصال...";
 
-            if (ws) { ws.close(); }
+    if (ws) { ws.close(); }
 
-            let wsUrl = ip.startsWith("ws://") || ip.startsWith("wss://") ? ip : `ws://${ip}:8080`;
+    let wsUrl = ip.startsWith("ws://") || ip.startsWith("wss://") ? ip : `ws://${ip}:8080`;
 
-            try {
-                ws = new WebSocket(wsUrl);
+    try {
+        ws = new WebSocket(wsUrl);
+        
+        // ⚡ أهم تعديل: استقبال البيانات كـ Blob باينري سريع جداً
+        ws.binaryType = "blob"; 
 
-                ws.onopen = () => {
-                    statusDot.classList.add('online');
-                    statusText.innerText = "متصل حي";
-                };
+        ws.onopen = () => {
+            statusDot.classList.add('online');
+            statusText.innerText = "متصل حي";
+        };
 
-                ws.onclose = () => {
-                    statusDot.classList.remove('online');
-                    statusText.innerText = "مفصول";
-                };
+        ws.onclose = () => {
+            statusDot.classList.remove('online');
+            statusText.innerText = "مفصول";
+        };
 
-                ws.onerror = () => {
-                    statusDot.classList.remove('online');
-                    statusText.innerText = "خطأ الاتصال";
-                };
+        ws.onerror = () => {
+            statusDot.classList.remove('online');
+            statusText.innerText = "خطأ الاتصال";
+        };
 
-                ws.onmessage = (event) => {
-                    const data = event.data;
-                    if (typeof data === "string" && data.startsWith("FRAME|")) {
-                        screenView.src = "data:image/jpeg;base64," + data.substring(6);
-                    }
-                };
-            } catch (err) {
-                alert("تعذر إنشاء الاتصال: " + err.message);
+        let currentUrl = null;
+
+        ws.onmessage = (event) => {
+            // إذا كانت البيانات صورة (Blob)
+            if (event.data instanceof Blob) {
+                // تنظيف الذاكرة من الصورة القديمة فوراً لمنع تهنيج المتصفح
+                if (currentUrl) {
+                    URL.revokeObjectURL(currentUrl);
+                }
+                
+                currentUrl = URL.createObjectURL(event.data);
+                screenView.src = currentUrl;
+            } 
+            // إذا كانت أوامر نصية عادية
+            else if (typeof event.data === "string" && event.data.startsWith("FRAME|")) {
+                // دعم احتياطي لـ Base64 لو السيرفر لسه متبعتش Blob
+                screenView.src = "data:image/jpeg;base64," + event.data.substring(6);
             }
-        }
+        };
+    } catch (err) {
+        alert("تعذر إنشاء الاتصال: " + err.message);
+    }
+}
 
         function sendCmd(cmd) {
             if (ws && ws.readyState === WebSocket.OPEN) {
